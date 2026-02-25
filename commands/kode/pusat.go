@@ -1,7 +1,7 @@
 package kode
 
 import (
-	"bill/commands/fitur"
+	"bill/commands/fitur/help"
 	"bill/commands/fitur/github"
 	"bill/commands/fitur/laravel"
 	"fmt"

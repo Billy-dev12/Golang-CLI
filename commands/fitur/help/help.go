@@ -3,7 +3,7 @@ package fitur
 import "fmt"
 
 func PrintHelp() {
-	fmt.Println("\nCara penggunaan Bill CLI:")
+	fmt.Println("\nCara penggunaan Billahi Robby Commands:")
 	fmt.Println("  bill buat laravel [nama]    - Membuat project Laravel baru")
 	fmt.Println("  bill cek dev               - Mengecek lingkungan PHP, Composer, XAMPP")
 	fmt.Println("  bill setup dev             - Menginstall alat pendukung (XAMPP, Composer)")
