@@ -40,7 +40,9 @@ func Jalankan() {
 
 	case "push":
 		if len(os.Args) < 4 {
-			fmt.Println("❌ Format salah. Gunakan: bill push [link_github] [pesan_update]")
+			fmt.Println("❌ Format salah. Gunakan:")
+			fmt.Println("   - bill push [link_github] [pesan] (Pertama kali)")
+			fmt.Println("   - bill push update [pesan]        (Repository lama)")
 			return
 		}
 		github.PushToGithub(os.Args[2], os.Args[3])

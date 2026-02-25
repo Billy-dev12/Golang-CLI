@@ -6,14 +6,40 @@ import (
 	"os/exec"
 )
 
-func PushToGithub(link string, message string) {
-	fmt.Printf("🚀 Memulai proses push ke: %s\n", link)
+func PushToGithub(linkORupdate string, message string) {
+	// Jika argumen pertama adalah "update", kita coba push ke remote yang sudah ada
+	if linkORupdate == "update" {
+		fmt.Println("🚀 Menjalankan push update otomatis...")
+
+		// Cek apakah repository sudah ada
+		if _, err := os.Stat(".git"); os.IsNotExist(err) {
+			fmt.Println("❌ Error: Folder .git tidak ditemukan. Gunakan push [link] pesan untuk pertama kali.")
+			return
+		}
+
+		fmt.Println("📝 Menambahkan file dan membuat commit...")
+		runGitCommand("git", "add", ".")
+		runGitCommand("git", "commit", "-m", message)
+
+		fmt.Println("⬆️  Sedang push ke GitHub...")
+		err := runGitCommand("git", "push") // Langsung push ke origin main (atau default upstream)
+
+		if err != nil {
+			fmt.Printf("\n❌ Gagal push: %v\n", err)
+		} else {
+			fmt.Println("\n✅ Berhasil update ke GitHub!")
+		}
+		return
+	}
+
+	// Logika awal untuk push ke link baru
+	fmt.Printf("🚀 Memulai proses push ke: %s\n", linkORupdate)
 
 	// 1. Cek apakah folder .git sudah ada
 	if _, err := os.Stat(".git"); os.IsNotExist(err) {
 		fmt.Println("📂 Inisialisasi Git repository baru...")
 		runGitCommand("git", "init")
-		runGitCommand("git", "remote", "add", "origin", link)
+		runGitCommand("git", "remote", "add", "origin", linkORupdate)
 		runGitCommand("git", "branch", "-M", "main")
 	} else {
 		fmt.Println("✅ Git repository sudah terdeteksi.")
