@@ -2,6 +2,7 @@ package kode
 
 import (
 	"bill/commands/fitur/github"
+	fitur "bill/commands/fitur/help"
 	"bill/commands/fitur/laravel"
 	"bill/commands/fitur/system"
 	"fmt"
@@ -9,53 +10,65 @@ import (
 )
 
 func Jalankan() {
-	// 1. Cek instalasi (PATH dsb)
-	system.CheckInstallation()
-
-	// 2. Jika dipanggil tanpa argumen (bisa jadi Double-Click)
+	// Jika dipanggil tanpa argumen (bisa jadi Double-Click)
 	if len(os.Args) < 2 {
-		system.ShowWelcome()
+		system.ShowWelcomeInInteractiveMode(prosesPerintah)
 		return
 	}
 
-	subCommand := os.Args[1]
+	prosesPerintah(os.Args[1:])
+}
+
+func prosesPerintah(args []string) {
+	if len(args) == 0 {
+		return
+	}
+
+	subCommand := args[0]
 
 	switch subCommand {
 	case "buat":
-		if len(os.Args) < 4 || os.Args[2] != "laravel" {
-			fmt.Println("❌ Format salah. Gunakan: bill buat laravel [nama]")
+		if len(args) < 3 || args[1] != "laravel" {
+			fmt.Println("    ❌ Format salah. Gunakan: bill buat laravel [nama]")
 			return
 		}
-		laravel.BuatLaravel(os.Args[3])
+		laravel.BuatLaravel(args[2])
 
 	case "cek":
-		if len(os.Args) < 3 || os.Args[2] != "dev" {
-			fmt.Println("❌ Format salah. Gunakan: bill cek dev")
+		if len(args) < 2 || args[1] != "dev" {
+			fmt.Println("    ❌ Format salah. Gunakan: bill cek dev")
 			return
 		}
 		laravel.CekDev()
 
 	case "setup":
-		if len(os.Args) < 3 || os.Args[2] != "dev" {
-			fmt.Println("❌ Format salah. Gunakan: bill setup dev")
+		if len(args) < 2 || args[1] != "dev" {
+			fmt.Println("    ❌ Format salah. Gunakan: bill setup dev")
 			return
 		}
 		laravel.SetupDev()
 
 	case "push":
-		if len(os.Args) < 4 {
-			fmt.Println("❌ Format salah. Gunakan:")
-			fmt.Println("   - bill push [link_github] [pesan] (Pertama kali)")
-			fmt.Println("   - bill push update [pesan]        (Repository lama)")
+		if len(args) < 3 {
+			fmt.Println("    ❌ Format salah. Gunakan:")
+			fmt.Println("       - bill push [link_github] [pesan]")
+			fmt.Println("       - bill push update [pesan]")
 			return
 		}
-		github.PushToGithub(os.Args[2], os.Args[3])
+		github.PushToGithub(args[1], args[2])
+
+	case "install":
+		system.Install()
 
 	case "help":
-		system.ShowWelcome()
+		fitur.PrintHelp()
+
+	case "exit", "keluar":
+		fmt.Println("    👋 Sampai jumpa!")
+		os.Exit(0)
 
 	default:
-		fmt.Printf("❌ Perintah '%s' tidak dikenali.\n", subCommand)
-		system.ShowWelcome()
+		fmt.Printf("    ❌ Perintah '%s' tidak dikenali.\n", subCommand)
+		fitur.PrintHelp()
 	}
 }
