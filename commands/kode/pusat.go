@@ -1,16 +1,26 @@
 package kode
 
 import (
-	"bill/commands/fitur/help"
 	"bill/commands/fitur/github"
+	fitur "bill/commands/fitur/help"
 	"bill/commands/fitur/laravel"
+	"bill/commands/fitur/system"
 	"fmt"
 	"os"
 )
 
 func Jalankan() {
+	// 1. Cek instalasi (PATH dsb)
+	system.CheckInstallation()
+
+	// 2. Jika dipanggil tanpa argumen (bisa jadi Double-Click)
 	if len(os.Args) < 2 {
 		fitur.PrintHelp()
+
+		// Penyelamat agar CMD tidak langsung hilang jika di-klik 2x (Double-click)
+		fmt.Println("\nTekan Enter untuk keluar...")
+		var tmp string
+		fmt.Scanln(&tmp)
 		return
 	}
 
