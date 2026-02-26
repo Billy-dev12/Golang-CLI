@@ -7,7 +7,109 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 )
+
+// ======================================
+//        🎨 ASCII ART & BANNER
+// ======================================
+
+func printRobot() {
+	robot := `
+        ╔══════════════════════════════════╗
+        ║     ____  _ _ _                  ║
+        ║    |  _ \(_) | |                 ║
+        ║    | |_) |_| | |_   _            ║
+        ║    |  _ <| | | | | | |           ║
+        ║    | |_) | | | | |_| |           ║
+        ║    |____/|_|_|_|\__, |           ║
+        ║                  __/ |           ║
+        ║      ASISTEN    |___/            ║
+        ╚══════════════════════════════════╝
+              ┌──────────────┐
+              │   [ O    O ] │
+              │      __      │
+              │    \____/    │
+              └──────┬───────┘
+                     │
+              ┌──────┴───────┐
+              │  ╔════════╗  │
+              │  ║ READY! ║  │
+              │  ╚════════╝  │
+              ├──────────────┤
+              │   /      \   │
+              └──/────────\──┘
+                 │        │
+                 ╘════════╛
+`
+	fmt.Println(robot)
+}
+
+func printWelcomeBanner() {
+	banner := `
+    ╔═══════════════════════════════════════════════╗
+    ║                                               ║
+    ║   🚀  BILLY ASISTEN - CLI TOOL  🚀           ║
+    ║                                               ║
+    ║   Selamat datang!                             ║
+    ║   Semua fitur sudah siap digunakan.           ║
+    ║                                               ║
+    ╚═══════════════════════════════════════════════╝
+`
+	fmt.Println(banner)
+}
+
+func printInstalledBanner() {
+	banner := `
+    ╔═══════════════════════════════════════════════╗
+    ║                                               ║
+    ║   ✅  INSTALASI BERHASIL!  ✅                 ║
+    ║                                               ║
+    ║   Billy Asisten sudah terpasang di sistemmu.  ║
+    ║   Sekarang tutup terminal ini, buka lagi,     ║
+    ║   dan panggil dari mana saja!                 ║
+    ║                                               ║
+    ╚═══════════════════════════════════════════════╝
+`
+	fmt.Println(banner)
+}
+
+func printLoading(text string) {
+	frames := []string{"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"}
+	for i := 0; i < 10; i++ {
+		fmt.Printf("\r  %s %s", frames[i%len(frames)], text)
+		time.Sleep(150 * time.Millisecond)
+	}
+	fmt.Println()
+}
+
+func printHelpInBox() {
+	fmt.Println("    ┌───────────────────────────────────────────────┐")
+	fmt.Println("    │  📖  DAFTAR PERINTAH:                        │")
+	fmt.Println("    ├───────────────────────────────────────────────┤")
+	fmt.Println("    │  bill buat laravel [nama]  → Buat project    │")
+	fmt.Println("    │  bill cek dev              → Cek environment │")
+	fmt.Println("    │  bill setup dev            → Pasang tools    │")
+	fmt.Println("    │  bill push [link] [pesan]  → Push ke GitHub  │")
+	fmt.Println("    │  bill push update [pesan]  → Update GitHub   │")
+	fmt.Println("    │  bill help                 → Tampilkan ini   │")
+	fmt.Println("    └───────────────────────────────────────────────┘")
+	fmt.Println()
+	fmt.Println("    🌐 https://github.com/Billy-dev12")
+	fmt.Println()
+}
+
+// ShowWelcome menampilkan robot + banner + help saat dijalankan tanpa argumen
+func ShowWelcome() {
+	printRobot()
+	printWelcomeBanner()
+	printHelpInBox()
+	pause()
+}
+
+// ======================================
+//        🔧 LOGIKA INSTALASI
+// ======================================
 
 func CheckInstallation() {
 	// 1. Dapatkan lokasi file .exe yang sedang berjalan
@@ -23,7 +125,7 @@ func CheckInstallation() {
 	targetDir := filepath.Join(localAppData, "bill-tool")
 	targetPath := filepath.Join(targetDir, exeName)
 
-	// 3. Jika sudah berjalan dari folder resmi, STOP.
+	// 3. Jika sudah berjalan dari folder resmi, STOP. Tampilkan robot selamat datang.
 	if strings.EqualFold(exeDir, targetDir) {
 		return
 	}
@@ -33,16 +135,21 @@ func CheckInstallation() {
 		return
 	}
 
-	// 5. Cek apakah alias 'bill' (atau nama exe) sudah ada di PATH
+	// 5. Cek apakah alias sudah ada di PATH
 	cmdName := strings.TrimSuffix(exeName, filepath.Ext(exeName))
 	if _, err := exec.LookPath(cmdName); err == nil {
 		return
 	}
 
-	// 6. Belum terinstall, tawarkan setup wizard
-	fmt.Printf("\n👋 Halo! Sepertinya Billy Asisten belum terpasang di sistem kamu.\n")
-	fmt.Println("Mau saya pasang otomatis supaya bisa dipanggil dari mana saja?")
-	fmt.Print("Pasang sekarang? (y/n, default: y): ")
+	// 6. Belum terinstall, tawarkan setup wizard dengan gaya!
+	printRobot()
+	fmt.Println("    👋 Halo! Sepertinya Billy Asisten belum terpasang")
+	fmt.Println("    di sistem kamu.")
+	fmt.Println()
+	fmt.Println("    Mau saya pasang otomatis supaya bisa dipanggil")
+	fmt.Println("    dari mana saja?")
+	fmt.Println()
+	fmt.Print("    Pasang sekarang? (y/n, default: y): ")
 
 	var response string
 	fmt.Scanln(&response)
@@ -51,31 +158,33 @@ func CheckInstallation() {
 	if response == "" || response == "y" || response == "yes" {
 		InstallToSystem(exePath, targetDir, targetPath)
 	} else {
-		fmt.Println("\n👍 Oke, aplikasi akan tetap berjalan dalam mode portable.")
+		fmt.Println("\n    👍 Oke, aplikasi berjalan dalam mode portable.")
 	}
 }
 
 func InstallToSystem(src, targetDir, targetPath string) {
-	fmt.Println("\n🛠️  Sedang memasang ke sistem...")
+	fmt.Println()
 
 	// Buat folder target jika belum ada
+	printLoading("Membuat folder instalasi...")
 	err := os.MkdirAll(targetDir, 0755)
 	if err != nil {
-		fmt.Printf("❌ Gagal membuat folder: %v\n", err)
+		fmt.Printf("    ❌ Gagal membuat folder: %v\n", err)
 		pause()
 		return
 	}
 
 	// Copy file .exe ke folder target
+	printLoading("Menyalin file ke sistem...")
 	err = copyFile(src, targetPath)
 	if err != nil {
-		fmt.Printf("❌ Gagal menyalin file: %v\n", err)
+		fmt.Printf("    ❌ Gagal menyalin file: %v\n", err)
 		pause()
 		return
 	}
 
-	// Daftarkan ke PATH Windows menggunakan PowerShell
-	// Kita cek dulu biar nggak double-double di PATH
+	// Daftarkan ke PATH Windows (tanpa duplikat)
+	printLoading("Mendaftarkan ke PATH Windows...")
 	script := fmt.Sprintf(`
 		$oldPath = [Environment]::GetEnvironmentVariable("Path", "User");
 		if ($oldPath -notlike "*%s*") {
@@ -86,22 +195,22 @@ func InstallToSystem(src, targetDir, targetPath string) {
 	err = cmd.Run()
 
 	if err != nil {
-		fmt.Printf("❌ Gagal mendaftarkan PATH: %v\n", err)
+		fmt.Printf("    ❌ Gagal mendaftarkan PATH: %v\n", err)
 		pause()
 		return
 	}
 
-	fmt.Println("\n✅ Instalasi Berhasil!")
-	fmt.Println("--------------------------------------------------")
-	fmt.Println("Silakan TUTUP terminal ini dan BUKA kembali.")
-	fmt.Printf("Setelah itu, kamu bisa panggil lewat terminal dari mana saja!\n")
-	fmt.Println("--------------------------------------------------")
+	// 🎉 Tampilkan hasil instalasi yang meriah!
+	printRobot()
+	printInstalledBanner()
+	printHelpInBox()
+
 	pause()
 	os.Exit(0)
 }
 
 func pause() {
-	fmt.Println("\nTekan Enter untuk keluar...")
+	fmt.Println("    Tekan Enter untuk keluar...")
 	fmt.Scanln()
 }
 
